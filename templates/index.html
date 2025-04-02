@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NIFTY OHLC & Bollinger Bands</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .container {
+            max-width: 800px;
+            margin-top: 50px;
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        table {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2 class="text-primary">NIFTY OHLC & Bollinger Bands</h2>
+
+        <div class="mb-3">
+            <label for="date" class="form-label"><strong>Select Date:</strong></label>
+            <input type="date" id="date" class="form-control">
+        </div>
+        <button id="fetchBtn" class="btn btn-primary w-100">Show Data</button>
+
+        <h4 class="mt-4">OHLC Data</h4>
+        <table class="table table-hover table-bordered table-striped">
+            <thead class="table-dark">
+                <tr>
+                    <th>Datetime</th>
+                    <th>Open</th>
+                    <th>High</th>
+                    <th>Low</th>
+                    <th>Close</th>
+                </tr>
+            </thead>
+            <tbody id="ohlcTable">
+            </tbody>
+        </table>
+
+        <h4 class="mt-4">Bollinger Bands</h4>
+        <table class="table table-hover table-bordered table-striped">
+            <thead class="table-dark">
+                <tr>
+                    <th>Datetime</th>
+                    <th>Upper</th>
+                    <th>Lower</th>
+                    <th>SMA</th>
+                </tr>
+            </thead>
+            <tbody id="bollingerTable">
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        document.getElementById("fetchBtn").addEventListener("click", function() {
+            const date = document.getElementById("date").value;
+            fetch("/fetch_data", {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: "date=" + date
+            })
+            .then(response => response.json())
+            .then(data => {
+                let ohlcTable = document.getElementById("ohlcTable");
+                let bollingerTable = document.getElementById("bollingerTable");
+
+                ohlcTable.innerHTML = "";
+                bollingerTable.innerHTML = "";
+
+                data.ohlc.forEach(row => {
+                    ohlcTable.innerHTML += `<tr>
+                        <td>${row.datetime}</td>
+                        <td>${row.open}</td>
+                        <td>${row.high}</td>
+                        <td>${row.low}</td>
+                        <td>${row.close}</td>
+                    </tr>`;
+                });
+
+                data.indicators.forEach(row => {
+                    bollingerTable.innerHTML += `<tr>
+                        <td>${row.datetime}</td>
+                        <td>${row.upper}</td>
+                        <td>${row.lower}</td>
+                        <td>${row.sma}</td>
+                    </tr>`;
+                });
+            });
+        });
+    </script>
+</body>
+</html>

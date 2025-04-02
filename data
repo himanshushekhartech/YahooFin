@@ -1,0 +1,19 @@
+CREATE DATABASE algo;
+
+USE algo;
+
+CREATE TABLE data (
+    datetime DATETIME PRIMARY KEY,
+    open FLOAT,
+    high FLOAT,
+    low FLOAT,
+    close FLOAT
+);
+
+CREATE TABLE indicators (
+    datetime DATETIME PRIMARY KEY,
+    upper FLOAT,
+    lower FLOAT,
+    sma FLOAT,
+    FOREIGN KEY (datetime) REFERENCES data(datetime)
+);
